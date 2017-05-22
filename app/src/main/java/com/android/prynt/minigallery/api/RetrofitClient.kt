@@ -1,7 +1,6 @@
 package com.android.prynt.minigallery.api
 
-import com.android.prynt.minigallery.models.Gallery
-import com.android.prynt.minigallery.models.GalleryList
+import com.android.prynt.minigallery.models.Items
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Retrofit
@@ -17,13 +16,6 @@ class RetrofitClient {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
         service = Retrofit.create(ApiService :: class.java)
-    }
-
-    fun getImagesAndVideos(): Call<List<Items>> {
-        //callback: Callback<List<Gallery>>
-        val call = service.getItems()
-        return call
- //       call.enqueue(callback)
     }
 
     fun getImagesAndVideos(callback: Callback<List<Items>>) {
