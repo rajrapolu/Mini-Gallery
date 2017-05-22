@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="no_dp">0dp</dimen>
+    <dimen name="top_padding">50dp</dimen>
+    <dimen name="bottom_padding">20dp</dimen>
+    <dimen name="padding_on_sides">130dp</dimen>
+</resources>

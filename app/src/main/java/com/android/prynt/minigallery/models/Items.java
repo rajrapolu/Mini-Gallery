@@ -1,4 +1,4 @@
-package com.android.prynt.minigallery.api;
+package com.android.prynt.minigallery.models;
 
 
 public class Items {

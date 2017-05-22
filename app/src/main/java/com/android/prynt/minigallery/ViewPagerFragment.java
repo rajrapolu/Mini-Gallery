@@ -1,6 +1,5 @@
 package com.android.prynt.minigallery;
 
-import android.annotation.SuppressLint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,7 +7,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
@@ -26,14 +26,16 @@ import com.google.android.exoplayer2.util.Util;
 public class ViewPagerFragment extends Fragment {
 
     private static final String VIDEO_KEY = "video_key";
+    private static final String IMAGE_KEY = "image_key";
     private String videoURI;
-    SimpleExoPlayer player;
-    SimpleExoPlayerView playerView;
-    boolean playWhenReady;
-    int currentWindow;
-    long playbackPosition;
-    FrameLayout frameLayout;
+    private SimpleExoPlayer player;
+    private SimpleExoPlayerView playerView;
+    private boolean playWhenReady;
+    private int currentWindow;
+    private long playbackPosition;
+    private AspectRatioFrameLayout frameLayout;
 
+    //To create a new instance of the fragment
     public static ViewPagerFragment newInstance(String videoURL) {
 
         Bundle args = new Bundle();
@@ -57,12 +59,14 @@ public class ViewPagerFragment extends Fragment {
         videoURI = args.getString(VIDEO_KEY);
         if (videoURI == null) throw new AssertionError();
 
-        frameLayout = (FrameLayout) rootView.findViewById(R.id.aspect_ratio);
-        playerView = (SimpleExoPlayerView) frameLayout.findViewById(R.id.video_view);
+        playerView = (SimpleExoPlayerView) rootView.findViewById(R.id.video_view);
+        frameLayout = (AspectRatioFrameLayout) rootView.findViewById(R.id.aspect_ratio);
+        frameLayout.setAspectRatio(2/3);
 
         return rootView;
     }
 
+    //Initializing the player in on start or on resume based on the api level
     @Override
     public void onStart() {
         super.onStart();
@@ -79,6 +83,7 @@ public class ViewPagerFragment extends Fragment {
         }
     }
 
+    //Method to initialize the player
     private void initializePlayer() {
         player = ExoPlayerFactory.newSimpleInstance(
                 new DefaultRenderersFactory(getContext()),
@@ -91,14 +96,17 @@ public class ViewPagerFragment extends Fragment {
         Uri uri = Uri.parse(videoURI);
         MediaSource mediaSource = buildMediaSource(uri);
         player.prepare(mediaSource, true, false);
+
     }
 
+    //Method to get a media source
     private MediaSource buildMediaSource(Uri uri) {
         return new ExtractorMediaSource(uri,
                 new DefaultHttpDataSourceFactory("ua"),
                 new DefaultExtractorsFactory(), null, null);
     }
 
+    //We release the player based on the api level
     @Override
     public void onPause() {
         super.onPause();
@@ -107,6 +115,7 @@ public class ViewPagerFragment extends Fragment {
         }
     }
 
+    //Method to release the player
     private void releasePlayer() {
         if (player != null) {
             playbackPosition = player.getCurrentPosition();

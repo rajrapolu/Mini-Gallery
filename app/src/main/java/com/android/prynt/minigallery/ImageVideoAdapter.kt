@@ -3,20 +3,28 @@ package com.android.prynt.minigallery
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
-import android.util.Log
-import com.android.prynt.minigallery.api.Items
+import com.android.prynt.minigallery.models.Items
 
-class ImageVideoAdapter(fm: FragmentManager, galleryList: List<Items>?) : FragmentStatePagerAdapter(fm) {
+class ImageVideoAdapter(fm: FragmentManager, galleryList: List<Items>?, adapter: Int) :
+        FragmentStatePagerAdapter(fm) {
 
     var gallery: List<Items> = galleryList!!
     var NUM_ITEMS: Int = gallery.size
+    var adapterValue: Int = adapter
 
+    //Conditional statements to decide which fragments to return
     override fun getItem(position: Int): Fragment? {
-        Log.i("yes", gallery[position].videoUrl)
-        return ViewPagerFragment.newInstance(gallery[position].videoUrl)
+        if (adapterValue == MainActivity.VIDEO_ADAPTER) {
+            return ViewPagerFragment.newInstance(gallery[position].videoUrl)
+        } else if (adapterValue == MainActivity.IMAGE_ADAPTER) {
+            return BottomCarouselFragment.newInstance(gallery[position].imageUrl)
+        } else {
+            return null
+        }
     }
 
     override fun getCount(): Int {
         return NUM_ITEMS
     }
+
 }
