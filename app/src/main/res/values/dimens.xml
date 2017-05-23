@@ -4,4 +4,5 @@
     <dimen name="top_padding">50dp</dimen>
     <dimen name="bottom_padding">20dp</dimen>
     <dimen name="padding_on_sides">130dp</dimen>
+    <dimen name="hundred_dp">100dp</dimen>
 </resources>

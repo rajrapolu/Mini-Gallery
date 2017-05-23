@@ -1,5 +1,9 @@
 package com.android.prynt.minigallery;
 
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -7,8 +11,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.FrameLayout;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
@@ -26,14 +29,13 @@ import com.google.android.exoplayer2.util.Util;
 public class ViewPagerFragment extends Fragment {
 
     private static final String VIDEO_KEY = "video_key";
-    private static final String IMAGE_KEY = "image_key";
     private String videoURI;
     private SimpleExoPlayer player;
     private SimpleExoPlayerView playerView;
     private boolean playWhenReady;
     private int currentWindow;
     private long playbackPosition;
-    private AspectRatioFrameLayout frameLayout;
+    private FrameLayout frameLayout;
 
     //To create a new instance of the fragment
     public static ViewPagerFragment newInstance(String videoURL) {
@@ -60,8 +62,11 @@ public class ViewPagerFragment extends Fragment {
         if (videoURI == null) throw new AssertionError();
 
         playerView = (SimpleExoPlayerView) rootView.findViewById(R.id.video_view);
-        frameLayout = (AspectRatioFrameLayout) rootView.findViewById(R.id.aspect_ratio);
-        frameLayout.setAspectRatio(2/3);
+        frameLayout = (FrameLayout) rootView.findViewById(R.id.aspect_ratio);
+
+        //Masking the view using a rectangle on all the sides
+        View rectangle = new RectView(getContext());
+        frameLayout.addView(rectangle);
 
         return rootView;
     }
@@ -92,12 +97,15 @@ public class ViewPagerFragment extends Fragment {
         playerView.setPlayer(player);
         player.setPlayWhenReady(playWhenReady);
         player.seekTo(currentWindow, playbackPosition);
+        playerView.setUseController(true);
 
         Uri uri = Uri.parse(videoURI);
         MediaSource mediaSource = buildMediaSource(uri);
         player.prepare(mediaSource, true, false);
 
     }
+
+
 
     //Method to get a media source
     private MediaSource buildMediaSource(Uri uri) {
@@ -135,4 +143,27 @@ public class ViewPagerFragment extends Fragment {
     }
 
 
+    //Class used to create rectangles
+    private class RectView extends View {
+
+        public RectView(Context context) {
+            super(context);
+        }
+
+        @Override
+        protected void onDraw(Canvas canvas) {
+            super.onDraw(canvas);
+
+            int x = getWidth();
+            int y = getHeight();
+
+            Paint paint = new Paint();
+            paint.setStyle(Paint.Style.FILL);
+            paint.setColor(Color.WHITE);
+            canvas.drawRect(0f, 0f, x, y/5, paint);
+            canvas.drawRect(0f, 0f, x/(10/3), y, paint);
+            canvas.drawRect((7*x)/10, 0f, x, y, paint);
+            canvas.drawRect(0f, (y*4)/5, x, y, paint);
+        }
+    }
 }
